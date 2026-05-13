@@ -59,8 +59,8 @@
     <FxCompile Include="Resources\shaders\TerrainVS.hlsl">
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="TestVS.hlsl" />
-    <FxCompile Include="TestPS.hlsl" />
+    <FxCompile Include="Resources\shaders\TestPS.hlsl" />
+    <FxCompile Include="Resources\shaders\TestVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\shaders\Sprite.hlsli">
