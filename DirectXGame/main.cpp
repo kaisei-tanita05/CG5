@@ -5,39 +5,6 @@
 using namespace KamataEngine;
 using namespace Microsoft::WRL;
 
-// ComPtr<ID3D12Resource> CreateRenderTextureResource(ComPtr<ID3D12Device> device, uint32_t width, uint32_t height, DXGI_FORMAT format, const Vector4& clearColor) {
-//	D3D12_RESOURCE_DESC resourceDesc{};
-//	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;//RenderTargetとして利用可能にする
-//
-//	D3D12_HEAP_PROPERTIES heapProperties{};
-//	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT; // 当然VRAM状に作る
-//
-//	// ClearValueの設定
-//	D3D12_CLEAR_VALUE clearValue{};
-//	clearValue.Format = format;
-//	clearValue.Color[0] = clearColor.x;
-//	clearValue.Color[1] = clearColor.y;
-//	clearValue.Color[2] = clearColor.z;
-//	clearValue.Color[3] = clearColor.w;
-//
-//	ComPtr<ID3D12Resource> resource = nullptr;
-//
-//	device->CreateCommittedResource(
-//		&heapProperties,
-//		D3D12_HEAP_FLAG_NONE,
-//		&resourceDesc,
-//		D3D12_RESOURCE_STATE_RENDER_TARGET, // RenderTargetとして利用するので、初期状態はRenderTarget
-//		&clearValue, // ClearValueを指定
-//		IID_PPV_ARGS(&resource));
-//	return resource;
-//
-//	int kClientWidth = 1280;
-//	int kClientHeight = 720;
-//
-//	const Vector4 kRenderTargetClearValue{1.0f, 0.0f, 0.0f, 1.0f}; // 一旦分かりやすいように赤色でクリアするようにしてみる
-//	auto renderTextureResource = CreateRenderTextureResource(device, kClientWidth, kClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
-// }
-
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
@@ -51,6 +18,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	int32_t w = dxCommon->GetBackBufferWidth();
 	int32_t h = dxCommon->GetBackBufferHeight();
 	DebugText::GetInstance()->ConsolePrintf(std::format("width: {}, height: {}\n", w, h).c_str());
+
 
 	// DirectXCommonクラスが管理している、コマンドリストの取得
 	ComPtr<ID3D12GraphicsCommandList> commandList = dxCommon->GetCommandList();
