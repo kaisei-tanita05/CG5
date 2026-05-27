@@ -1,43 +1,12 @@
 #include <KamataEngine.h>
 #include <Windows.h>
-#include <d3dcompiler.h>
+// #include <d3dcompiler.h>
+#include "Shader.h"
 
 using namespace KamataEngine;
 using namespace Microsoft::WRL;
 
 // シェーダーコンパイル関数
-//    filePath: シェーダーファイルのパス 例L"Resources/shaders/TestVS.hlsl"
-//  shaderModel: シェーダーモデル 例"vs_5_0"、"ps_5_0"
-
-ID3DBlob* CompileShader(const std::wstring& filePath, const std::string& shaderModel) {
-	ID3DBlob* shaderBlob = nullptr;
-	ID3DBlob* errorBlob = nullptr;
-
-	HRESULT hr = D3DCompileFromFile(
-	    filePath.c_str(), // シェーダーファイル名
-	    nullptr,
-	    D3D_COMPILE_STANDARD_FILE_INCLUDE,               // インクルード可能にする
-	    "main", shaderModel.c_str(),                     // エントリーポイント名、シェーダーモデル指定
-	    D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-	    0, &shaderBlob, &errorBlob);
-
-	// エラーが発生した場合、止める
-	if (FAILED(hr)) {
-		if (errorBlob) {
-			OutputDebugStringA(reinterpret_cast<const char*>(errorBlob->GetBufferPointer()));
-			errorBlob->Release();
-		}
-		if (shaderBlob) {
-			shaderBlob->Release();
-		}
-		assert(false);
-	}
-
-	return shaderBlob;
-
-	// 関数プロトタイプ宣言
-	ID3DBlob* CompileShader(const std::wstring& filePath, const std::string& shaderModel);
-}
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -96,48 +65,25 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 塗りつぶしモードをリソッドにする(ワイヤーフレームになら D3D12_FILL_MODE_WIREFRAME)
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
-	// コンパイル済みのShader、エラー時情報の格納場所の用意
-	ComPtr<ID3DBlob> vsBlob = CompileShader(L"Resources/shaders/TestVS.hlsl", "vs_5_0"); // 頂点シェーダーオブジェクト
-	assert(vsBlob != nullptr);
-	ComPtr<ID3DBlob> psBlob = CompileShader(L"Resources/shaders/TestPS.hlsl", "ps_5_0"); // ピクセルシェーダーオブジェクト
-	assert(psBlob != nullptr);
+	//// コンパイル済みのShader、エラー時情報の格納場所の用意
+	// 頂点シェーダーの読み込みとコンパイル
+	Shader vs;
+	vs.Load(L"Resources/shaders/TestVS.hlsl", "vs_5_0");
+	assert(vs.GetBlob() != nullptr);
 
-	//std::wstring vsFile = L"Resources/shaders/TestVS.hlsl";
-	//hr = D3DCompileFromFile(vsFile.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &vsBlob, &errorBlob);
-	//if (FAILED(hr)) {
-	//	DebugText::GetInstance()->ConsolePrintf(std::system_category().message(hr).c_str());
-	//	if (errorBlob) {
-	//		DebugText::GetInstance()->ConsolePrintf(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-	//	}
-	//	assert(false);
-	//}
-
-	//// 頂点シェーダーの読み込みとコンパイル
-	//std::wstring psFile = L"Resources/shaders/TestPS.hlsl";
-	//hr = D3DCompileFromFile(
-	//    psFile.c_str(), // シェーダーファイル名
-	//    nullptr,
-	//    D3D_COMPILE_STANDARD_FILE_INCLUDE // インクルード可能にする
-	//    ,
-	//    "main", "ps_5_0",                                // エントリーポイント名、シェーダーモデル指定
-	//    D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, // デバッグ用設定
-	//    0, &psBlob, &errorBlob);
-	//if (FAILED(hr)) {
-	//	DebugText::GetInstance()->ConsolePrintf(std::system_category().message(hr).c_str());
-	//	if (errorBlob) {
-	//		DebugText::GetInstance()->ConsolePrintf(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
-	//	}
-	//	assert(false);
-	//}
+	// ピクセルシェーダーの読み込みとコンパイル
+	Shader ps;
+	ps.Load(L"Resources/shaders/TestPS.hlsl", "ps_5_0");
+	assert(ps.GetBlob() != nullptr);
 
 	// PSO(PipelineStateObject)の作成-----------------------
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
-	graphicsPipelineStateDesc.pRootSignature = rootSignature;                             // RootSignature
-	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;                              // InputLayout
-	graphicsPipelineStateDesc.VS = {vsBlob->GetBufferPointer(), vsBlob->GetBufferSize()}; // VertexShader
-	graphicsPipelineStateDesc.PS = {psBlob->GetBufferPointer(), psBlob->GetBufferSize()}; // PixelShader
-	graphicsPipelineStateDesc.BlendState = blendDesc;                                     // BlendState
-	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;                           // RasterizerState
+	graphicsPipelineStateDesc.pRootSignature = rootSignature;                                         // RootSignature
+	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;                                          // InputLayout
+	graphicsPipelineStateDesc.VS = {vs.GetBlob()->GetBufferPointer(), vs.GetBlob()->GetBufferSize()}; // VertexShader
+	graphicsPipelineStateDesc.PS = {ps.GetBlob()->GetBufferPointer(), ps.GetBlob()->GetBufferSize()}; // PixelShader
+	graphicsPipelineStateDesc.BlendState = blendDesc;                                                 // BlendState
+	graphicsPipelineStateDesc.RasterizerState = rasterizerDesc;                                       // RasterizerState
 	// 書き込むRTVの情報
 	graphicsPipelineStateDesc.NumRenderTargets = 1;                            // 1つのRTVに書き込む
 	graphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB; // RTVのフォーマット
@@ -216,8 +162,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	vertexResource->Release();
 	signatureBlob->Release();
 	rootSignature->Release();
-	vsBlob->Release();
-	psBlob->Release();
 
 	// エンジンの終了処理
 	Finalize();
