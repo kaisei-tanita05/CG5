@@ -108,6 +108,7 @@ void Shader::LoadDxc(const std::wstring& filePath, const
 	    shaderModel.c_str(), // ShaderProfileの設定
 	    L"-Zi",              // デバッグ情報を生成する
 	    L"-Qembed_debug",    // デバッグ情報をシェーダーオブジェクトに埋め込む
+	    L"-I",
 	    L"Od",               // 最適化を外しておく
 	    L"-Zpr"              // メモリレイアウトは行優先
 	};
