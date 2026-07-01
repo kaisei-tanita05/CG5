@@ -119,7 +119,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	VertexBuffer vb;
 
-	vb.Create(sizeof(vertices) * 3, sizeof(vertices[0]));
+	vb.Create(sizeof(vertices), sizeof(vertices[0]));
 
 	// 頂点リソースにデータを書き込む
 	VertexData* pGpuVertices = nullptr;
