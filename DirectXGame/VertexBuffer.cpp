@@ -31,7 +31,7 @@ void VertexBuffer::Create(const UINT size, const UINT stride) {
 	ID3D12Resource* vertexResource = nullptr;
 
 	//★HRESULT　追加
-	HRESULT hr = dxCommon->GetDevice()->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = dxCommon->GetDevice()->CreateCommittedResource(
 	    &uploadHeapProperties, // ヒープ設定
 	    D3D12_HEAP_FLAG_NONE,
 	    &vertexResourceDesc,               // リソース設定

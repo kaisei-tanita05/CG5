@@ -1,5 +1,6 @@
 #include "RootSignature.h"
 #include <KamataEngine.h> // DirectXCommon
+#include <cassert>
 
 using namespace KamataEngine;
 
