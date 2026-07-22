@@ -394,7 +394,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 
-		dxCommon->PreDraw();
+		//dxCommon->PreDraw();
 		// // TransitionBarrierを SRV ⇒ RTV に設定する
 		D3D12_RESOURCE_BARRIER barrier{};
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;                       // TransitionBarrierの設定
